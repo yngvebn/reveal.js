@@ -20,12 +20,22 @@
 			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
 			document.getElementsByTagName( 'head' )[0].appendChild( link );
 		</script>
+		<script
+			src="https://code.jquery.com/jquery-3.1.1.min.js"
+			integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+			crossorigin="anonymous"></script>
+<style>
+
+</style>
 	</head>
 	<body>
 		<div class="reveal">
 			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
+				<!--<section>
+					<div >Slide 1</div>
+					<small style='margin-left: 9em; margin-top: 2em' />- Yngve Bakken-Nilsen</small>
+
+				</section>-->
 			</div>
 		</div>
 
@@ -33,9 +43,39 @@
 		<script src="js/reveal.js"></script>
 
 		<script>
+		function cleanup(str){
+			var result = str.trim().substring(1, str.length-1);
+			if(result[result.length-1] === '\"'){
+				result = result.substring(0, result.length-1);
+			}
+			return result;
+		}
+			$.get('poll.json', function(response){
+				response.forEach(function(response){
+						let text = cleanup(response['hvaSynesDuOmVrNyeSiderGiOssDirekteTilbakemeldingHer']);
+						if(text.trim().length > 2){
+							let quote = $("<div />").text(text);
+							let device = cleanup(response['device']);
+							let browser = $("<small style='margin-left: 9em; margin-top: 2em' />").text(cleanup(response['browser'])+' @ '+device)
+							let createdSlide = $("<section />");
+							createdSlide.append(quote);
+							createdSlide.append(browser);
+							$(".slides").append(createdSlide);
+						}
+					
+				})
+			}).then(function(){
 			// More info https://github.com/hakimel/reveal.js#configuration
 			Reveal.initialize({
 				history: true,
+				autoSlide: 15000,
+				autoSlideMethod: Reveal.navigateNext,
+				controls: false,
+				shuffle: true,	
+				transition: 'convex',
+				loop: true,
+				progress: false,
+				autoSlideStoppable: false,
 
 				// More info https://github.com/hakimel/reveal.js#dependencies
 				dependencies: [
@@ -45,6 +85,8 @@
 					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
 				]
 			});
+			})
+			var index = 0;
 		</script>
 	</body>
 </html>
